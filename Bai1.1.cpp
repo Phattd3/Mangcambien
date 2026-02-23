@@ -1,40 +1,32 @@
-#include "DHTesp.h" // Click here to get the library: http://librarymanager/All#DHTesp
+#include <Arduino.h>
+#include <DHT.h>
 
+#define DHTPIN 4
+#define DHTTYPE DHT11
 
+DHT dht(DHTPIN, DHTTYPE); // ch�n du lieu, loai DHT
 
-DHTesp dht;
-
-void setup()
-{
+void setup() {
   Serial.begin(115200);
-  Serial.println();
-  Serial.println("Status\tHumidity (%)\tTemperature (C)\t(F)\tHeatIndex (C)\t(F)");
-  String thisBoard= ARDUINO_BOARD;
-  Serial.println(thisBoard);
+  delay(1000);
 
-  // Autodetect is not working reliable, don't use the following line
-  // dht.setup(17);
-  // use this instead: 
-  dht.setup(17, DHTesp::DHT22); // Connect DHT sensor to GPIO 17
+  dht.begin();
+  Serial.println("Dang ket noi voi ESP32");
 }
 
-void loop()
-{
-  delay(dht.getMinimumSamplingPeriod());
+void loop() {
+  float NhietDo = dht.readTemperature(); //goi ham con
+  float DoAm    = dht.readHumidity();    
 
-  float humidity = dht.getHumidity();
-  float temperature = dht.getTemperature();
+  if (isnan(NhietDo) || isnan(DoAm)) {
+    Serial.println("Loi doc cam bien!");
+  } else {
+    Serial.print("Nhiet do: ");
+    Serial.print(NhietDo);
+    Serial.print(" °C | Do am: ");
+    Serial.print(DoAm);
+    Serial.println(" %");
+  }
 
-  Serial.print(dht.getStatusString());
-  Serial.print("\t");
-  Serial.print(humidity, 1);
-  Serial.print("\t\t");
-  Serial.print(temperature, 1);
-  Serial.print("\t\t");
-  Serial.print(dht.toFahrenheit(temperature), 1);
-  Serial.print("\t\t");
-  Serial.print(dht.computeHeatIndex(temperature, humidity, false), 1);
-  Serial.print("\t\t");
-  Serial.println(dht.computeHeatIndex(dht.toFahrenheit(temperature), humidity, true), 1);
   delay(2000);
 }
