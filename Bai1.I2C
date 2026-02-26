@@ -1,0 +1,31 @@
+#include <Arduino.h>
+#include <Wire.h>
+#include <BH1750.h> // cam bien cuong do anh sang
+
+BH1750 lightMeter;
+
+void setup() {
+  Serial.begin(9600);   // toc do bit
+  Wire.begin(21, 22);   // SDA, SCL
+
+  if (lightMeter.begin(BH1750::CONTINUOUS_HIGH_RES_MODE)) {
+    Serial.println("BH1750 khoi dong thanh cong");
+  } else {
+    Serial.println("Khong tim thay BH1750!");
+    while (1);
+  }
+}
+
+void loop() {
+  float lux = lightMeter.readLightLevel(); // goi ham con readLightLevel() trong lightMeter
+
+  if (lux < 0) {
+    Serial.println("Loi doc BH1750");
+  } else {
+    Serial.print("Cuong do anh sang: ");
+    Serial.print(lux);
+    Serial.println(" lux");
+  }
+
+  delay(1000);
+}
