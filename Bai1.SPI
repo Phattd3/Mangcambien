@@ -1,0 +1,45 @@
+#include <SPI.h>
+#include <MPU6500_WE.h>
+
+#define CS_PIN 5
+
+MPU6500_WE mpu = MPU6500_WE(CS_PIN);
+
+void setup() {
+  Serial.begin(115200);
+  delay(1000);
+
+  SPI.begin(18, 19, 23, CS_PIN);
+
+  Serial.println("MPU6500 SPI init...");
+
+  if (!mpu.init()) {
+    Serial.println("MPU6500 not connected!");
+    while (1);
+  }
+
+  Serial.println("MPU6500 connected!");
+
+  mpu.setAccRange(MPU6500_ACC_RANGE_2G);
+  mpu.setGyrRange(MPU6500_GYRO_RANGE_250);
+
+  mpu.enableAccDLPF(true);
+  mpu.enableGyrDLPF(true);
+}
+
+void loop() {
+  xyzFloat acc = mpu.getAccRawValues();
+  xyzFloat gyr = mpu.getGyrRawValues();
+
+  Serial.println("------");
+
+  Serial.print("ACC X: "); Serial.println(acc.x);
+  Serial.print("ACC Y: "); Serial.println(acc.y);
+  Serial.print("ACC Z: "); Serial.println(acc.z);
+
+  Serial.print("GYR X: "); Serial.println(gyr.x);
+  Serial.print("GYR Y: "); Serial.println(gyr.y);
+  Serial.print("GYR Z: "); Serial.println(gyr.z);
+
+  delay(500);
+}
